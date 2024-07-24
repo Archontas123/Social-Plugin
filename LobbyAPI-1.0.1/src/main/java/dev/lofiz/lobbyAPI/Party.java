@@ -1,5 +1,4 @@
-package dev.lofiz.lobbyAPI;
-
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -38,15 +37,30 @@ public class Party {
         members.remove(player.getUniqueId());
     }
 
+    public void transferLeadership() {
+        if (!members.isEmpty()) {
+            leader = members.iterator().next();
+        }
+    }
+
     public Set<UUID> getMembers() {
         return members;
     }
 
     public void broadcast(String message) {
         for (UUID memberId : members) {
-            Player member = org.bukkit.Bukkit.getPlayer(memberId);
+            Player member = Bukkit.getPlayer(memberId);
             if (member != null && member.isOnline()) {
                 member.sendMessage(message);
+            }
+        }
+    }
+
+    public void partyChat(Player sender, String message) {
+        for (UUID memberId : members) {
+            Player member = Bukkit.getPlayer(memberId);
+            if (member != null && member.isOnline()) {
+                member.sendMessage("[Party] " + sender.getName() + ": " + message);
             }
         }
     }

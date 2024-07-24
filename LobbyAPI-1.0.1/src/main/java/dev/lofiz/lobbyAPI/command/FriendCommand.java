@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.command;
-
-import dev.lofiz.lobbyAPI.manager.FriendManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,37 +19,58 @@ public class FriendCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (args.length < 2) {
-            player.sendMessage("Usage: /friend <add|remove|list> <player>");
+        if (args.length < 1) {
+            player.sendMessage("Usage: /friend <add|remove|list|accept> <player>");
             return true;
         }
 
         String action = args[0].toLowerCase();
-        String targetName = args[1];
-        Player target = player.getServer().getPlayer(targetName);
-
-        if (target == null) {
-            player.sendMessage("Player not found.");
-            return true;
-        }
 
         switch (action) {
             case "add":
-                friendManager.addFriend(player, target);
-                player.sendMessage("Added " + targetName + " as a friend.");
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /friend add <player>");
+                    return true;
+                }
+                Player friend = player.getServer().getPlayer(args[1]);
+                if (friend != null) {
+                    friendManager.sendFriendRequest(player, friend);
+                } else {
+                    player.sendMessage("Player not found.");
+                }
                 break;
             case "remove":
-                friendManager.removeFriend(player, target);
-                player.sendMessage("Removed " + targetName + " from friends.");
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /friend remove <player>");
+                    return true;
+                }
+                friend = player.getServer().getPlayer(args[1]);
+                if (friend != null) {
+                    friendManager.removeFriend(player, friend);
+                } else {
+                    player.sendMessage("Player not found.");
+                }
                 break;
             case "list":
                 player.sendMessage("Friends:");
-                for (Player friend : friendManager.listFriends(player)) {
-                    player.sendMessage("- " + friend.getName());
+                for (Player friendPlayer : friendManager.listFriends(player)) {
+                    player.sendMessage("- " + friendPlayer.getName());
+                }
+                break;
+            case "accept":
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /friend accept <player>");
+                    return true;
+                }
+                friend = player.getServer().getPlayer(args[1]);
+                if (friend != null) {
+                    friendManager.acceptFriendRequest(player, friend);
+                } else {
+                    player.sendMessage("Player not found.");
                 }
                 break;
             default:
-                player.sendMessage("Usage: /friend <add|remove|list> <player>");
+                player.sendMessage("Usage: /friend <add|remove|list|accept> <player>");
                 break;
         }
         return true;

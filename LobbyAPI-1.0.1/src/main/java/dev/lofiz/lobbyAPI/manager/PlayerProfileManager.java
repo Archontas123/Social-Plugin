@@ -1,14 +1,9 @@
-package dev.lofiz.lobbyAPI.manager;
-
-import dev.lofiz.lobbyAPI.PlayerProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerProfileManager {
     private Map<UUID, PlayerProfile> profiles;
@@ -41,6 +36,29 @@ public class PlayerProfileManager {
             profile.updateSetting(setting, value);
             saveProfiles();
             player.sendMessage("Setting updated: " + setting + " = " + value);
+        } else {
+            player.sendMessage("Profile not found.");
+        }
+    }
+
+    public void viewProfile(Player player) {
+        PlayerProfile profile = getProfile(player);
+        if (profile != null) {
+            player.sendMessage("Profile Settings:");
+            for (Map.Entry<String, String> entry : profile.getSettings().entrySet()) {
+                player.sendMessage(entry.getKey() + ": " + entry.getValue());
+            }
+        } else {
+            player.sendMessage("Profile not found.");
+        }
+    }
+
+    public void deleteProfile(Player player) {
+        UUID playerId = player.getUniqueId();
+        if (profiles.containsKey(playerId)) {
+            profiles.remove(playerId);
+            saveProfiles();
+            player.sendMessage("Profile deleted.");
         } else {
             player.sendMessage("Profile not found.");
         }

@@ -1,5 +1,3 @@
-package dev.lofiz.lobbyAPI.manager;
-
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -18,6 +16,10 @@ public class IgnoreManager {
     }
 
     public void addIgnoredPlayer(Player player, Player ignored) {
+        if (player.getUniqueId().equals(ignored.getUniqueId())) {
+            player.sendMessage("You cannot ignore yourself.");
+            return;
+        }
         UUID playerId = player.getUniqueId();
         UUID ignoredId = ignored.getUniqueId();
         ignoredPlayers.computeIfAbsent(playerId, k -> new ArrayList<>()).add(ignoredId);
@@ -48,6 +50,11 @@ public class IgnoreManager {
             }
         }
         return ignoredList;
+    }
+
+    public boolean isIgnored(Player sender, Player receiver) {
+        List<UUID> ignoredList = ignoredPlayers.get(receiver.getUniqueId());
+        return ignoredList != null && ignoredList.contains(sender.getUniqueId());
     }
 
     private void saveIgnoredPlayers() {

@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.command;
-
-import dev.lofiz.lobbyAPI.manager.PartyManager;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,7 +21,7 @@ public class PartyCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /party <create|join|leave|kick|disband|warp>");
+            player.sendMessage("Usage: /party <create|invite|accept|join|leave|kick|disband|warp|chat> [<player>]");
             return true;
         }
 
@@ -34,12 +31,36 @@ public class PartyCommand implements CommandExecutor {
             case "create":
                 partyManager.createParty(player);
                 break;
+            case "invite":
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /party invite <player>");
+                    return true;
+                }
+                Player invitee = player.getServer().getPlayer(args[1]);
+                if (invitee != null) {
+                    partyManager.sendPartyInvite(player, invitee);
+                } else {
+                    player.sendMessage("Player not found.");
+                }
+                break;
+            case "accept":
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /party accept <leader>");
+                    return true;
+                }
+                Player leader = player.getServer().getPlayer(args[1]);
+                if (leader != null) {
+                    partyManager.acceptPartyInvite(player, leader);
+                } else {
+                    player.sendMessage("Leader not found.");
+                }
+                break;
             case "join":
                 if (args.length < 2) {
                     player.sendMessage("Usage: /party join <leader>");
                     return true;
                 }
-                Player leader = player.getServer().getPlayer(args[1]);
+                leader = player.getServer().getPlayer(args[1]);
                 if (leader != null) {
                     partyManager.joinParty(player, leader);
                 } else {
@@ -68,8 +89,21 @@ public class PartyCommand implements CommandExecutor {
                 Location location = player.getLocation();
                 partyManager.warpParty(player, location);
                 break;
+            case "chat":
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /party chat <message>");
+                    return true;
+                }
+                Party party = partyManager.getParty(player);
+                if (party != null) {
+                    String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                    party.partyChat(player, message);
+                } else {
+                    player.sendMessage("You are not in a party.");
+                }
+                break;
             default:
-                player.sendMessage("Usage: /party <create|join|leave|kick|disband|warp>");
+                player.sendMessage("Usage: /party <create|invite|accept|join|leave|kick|disband|warp|chat> [<player>]");
                 break;
         }
         return true;

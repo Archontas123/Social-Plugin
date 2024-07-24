@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.command;
-
-import dev.lofiz.lobbyAPI.manager.IgnoreManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

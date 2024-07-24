@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.command;
-
-import dev.lofiz.lobbyAPI.manager.PlayerProfileManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +20,7 @@ public class ProfileCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /profile <create|setting> [<key> <value>]");
+            player.sendMessage("Usage: /profile <create|setting|view|delete> [<key> <value>]");
             return true;
         }
 
@@ -42,8 +39,14 @@ public class ProfileCommand implements CommandExecutor {
                 String value = args[2];
                 profileManager.updateSetting(player, key, value);
                 break;
+            case "view":
+                profileManager.viewProfile(player);
+                break;
+            case "delete":
+                profileManager.deleteProfile(player);
+                break;
             default:
-                player.sendMessage("Usage: /profile <create|setting> [<key> <value>]");
+                player.sendMessage("Usage: /profile <create|setting|view|delete> [<key> <value>]");
                 break;
         }
         return true;

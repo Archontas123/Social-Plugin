@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.manager;
-
-import dev.lofiz.lobbyAPI.Party;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,10 +9,12 @@ import java.util.*;
 
 public class PartyManager {
     private Map<UUID, Party> parties;
+    private Map<UUID, UUID> partyInvites;
     private File dataFile;
 
     public PartyManager(File dataFolder) {
         this.parties = new HashMap<>();
+        this.partyInvites = new HashMap<>();
         this.dataFile = new File(dataFolder, "parties.yml");
         loadParties();
     }
@@ -29,6 +28,27 @@ public class PartyManager {
         parties.put(leader.getUniqueId(), party);
         saveParties();
         leader.sendMessage("Party created.");
+    }
+
+    public void sendPartyInvite(Player leader, Player invitee) {
+        Party party = parties.get(leader.getUniqueId());
+        if (party != null && party.isLeader(leader)) {
+            partyInvites.put(invitee.getUniqueId(), leader.getUniqueId());
+            leader.sendMessage("Invite sent to " + invitee.getName() + ".");
+            invitee.sendMessage(leader.getName() + " has invited you to their party. Use /party accept " + leader.getName() + " to join.");
+        } else {
+            leader.sendMessage("You are not the leader of a party.");
+        }
+    }
+
+    public void acceptPartyInvite(Player player, Player leader) {
+        UUID leaderId = leader.getUniqueId();
+        if (partyInvites.containsKey(player.getUniqueId()) && partyInvites.get(player.getUniqueId()).equals(leaderId)) {
+            joinParty(player, leader);
+            partyInvites.remove(player.getUniqueId());
+        } else {
+            player.sendMessage("No invite from " + leader.getName() + ".");
+        }
     }
 
     public void joinParty(Player player, Player leader) {
@@ -47,6 +67,10 @@ public class PartyManager {
     public void leaveParty(Player player) {
         Party party = parties.get(player.getUniqueId());
         if (party != null) {
+            if (party.isLeader(player) && party.getMembers().size() > 1) {
+                // Transfer leadership
+                party.transferLeadership();
+            }
             party.removeMember(player);
             parties.remove(player.getUniqueId());
             saveParties();

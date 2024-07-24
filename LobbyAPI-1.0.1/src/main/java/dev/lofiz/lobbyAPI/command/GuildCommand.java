@@ -1,6 +1,3 @@
-package dev.lofiz.lobbyAPI.command;
-
-import dev.lofiz.lobbyAPI.manager.GuildManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +20,7 @@ public class GuildCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /guild <create|join|leave|disband> [name]");
+            player.sendMessage("Usage: /guild <create|join|leave|disband> [<name>]");
             return true;
         }
 
@@ -47,23 +44,13 @@ public class GuildCommand implements CommandExecutor {
                 guildManager.joinGuild(player, guildName);
                 break;
             case "leave":
-                if (args.length < 2) {
-                    player.sendMessage("Usage: /guild leave <name>");
-                    return true;
-                }
-                guildName = args[1];
-                guildManager.leaveGuild(player, guildName);
+                guildManager.leaveGuild(player);
                 break;
             case "disband":
-                if (args.length < 2) {
-                    player.sendMessage("Usage: /guild disband <name>");
-                    return true;
-                }
-                guildName = args[1];
-                guildManager.disbandGuild(player, guildName);
+                guildManager.disbandGuild(player);
                 break;
             default:
-                player.sendMessage("Usage: /guild <create|join|leave|disband> [name]");
+                player.sendMessage("Usage: /guild <create|join|leave|disband> [<name>]");
                 break;
         }
         return true;

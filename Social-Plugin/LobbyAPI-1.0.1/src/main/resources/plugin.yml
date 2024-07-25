@@ -1,0 +1,33 @@
+name: LobbyAPI-1.0.1
+version: '${project.version}'
+main: dev.lofiz.lobbyAPI.LobbyAPI
+api-version: '1.20'
+commands:
+  friend:
+    description: Manage friends
+  ignore:
+    description: Manage ignored players
+  profile:
+    description: Manage player profiles
+  party:
+    description: Manage parties
+  guild:
+    description: Manage guilds
+  tempban:
+    description: Temporarily ban a player
+  mute:
+    description: Mute a player
+  unmute:
+    description: Unmute a player
+  gmc:
+    description: Set game mode to creative
+  gms:
+    description: Set game mode to survival
+  gmsp:
+    description: Set game mode to spectator
+  gma:
+    description: Set game mode to adventure
+  discord:
+    description: Get the Discord link
+  store:
+    description: Get the store link

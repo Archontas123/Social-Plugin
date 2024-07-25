@@ -1,0 +1,13 @@
+mutedPlayers: {}
+
+profiles:
+  default-privacy: "public"
+  default-notifications: "enabled"
+
+parties:
+  max-party-size: 10
+  default-party-warp-location: "world,0,64,0"
+
+guilds:
+  max-guild-size: 50
+  default-guild-warp-location: "world,0,64,0"

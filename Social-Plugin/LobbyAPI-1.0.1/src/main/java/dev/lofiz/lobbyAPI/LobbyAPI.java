@@ -4,11 +4,7 @@ import dev.lofiz.lobbyAPI.command.*;
 import dev.lofiz.lobbyAPI.listener.ChatEventListener;
 import dev.lofiz.lobbyAPI.listener.PlayerStateListener;
 import dev.lofiz.lobbyAPI.listener.ProfileGUIListener;
-import dev.lofiz.lobbyAPI.manager.FriendManager;
-import dev.lofiz.lobbyAPI.manager.IgnoreManager;
-import dev.lofiz.lobbyAPI.manager.PlayerProfileManager;
-import dev.lofiz.lobbyAPI.manager.PartyManager;
-import dev.lofiz.lobbyAPI.manager.GuildManager;
+import dev.lofiz.lobbyAPI.manager.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class LobbyAPI extends JavaPlugin {
@@ -24,33 +20,36 @@ public final class LobbyAPI extends JavaPlugin {
         saveDefaultConfig();
 
         // Initialize managers
-        playerProfileManager = new PlayerProfileManager(getDataFolder());
         friendManager = new FriendManager(getDataFolder());
         ignoreManager = new IgnoreManager(getDataFolder(), friendManager);
+        playerProfileManager = new PlayerProfileManager(getDataFolder());
         partyManager = new PartyManager(getDataFolder());
         guildManager = new GuildManager(getDataFolder());
 
-        // Register commands
+        // Register commands and tab completers
         if (getCommand("friend") != null) {
             getCommand("friend").setExecutor(new FriendCommand(friendManager));
+            getCommand("friend").setTabCompleter(new FriendTabCompleter());
         }
         if (getCommand("ignore") != null) {
             getCommand("ignore").setExecutor(new IgnoreCommand(ignoreManager));
+            getCommand("ignore").setTabCompleter(new IgnoreTabCompleter());
         }
         if (getCommand("profile") != null) {
             getCommand("profile").setExecutor(new ProfileCommand(playerProfileManager));
-        }
-        if (getCommand("profileview") != null) {
-            getCommand("profileview").setExecutor(new ProfileViewCommand(playerProfileManager));
+            getCommand("profile").setTabCompleter(new ProfileTabCompleter());
         }
         if (getCommand("party") != null) {
             getCommand("party").setExecutor(new PartyCommand(partyManager));
+            getCommand("party").setTabCompleter(new PartyTabCompleter());
         }
         if (getCommand("guild") != null) {
             getCommand("guild").setExecutor(new GuildCommand(guildManager));
+            getCommand("guild").setTabCompleter(new GuildTabCompleter());
         }
         if (getCommand("tempban") != null) {
             getCommand("tempban").setExecutor(new TempBanCommand());
+            getCommand("tempban").setTabCompleter(new TempBanTabCompleter());
         }
 
         // Register mute commands
@@ -89,7 +88,7 @@ public final class LobbyAPI extends JavaPlugin {
         // Register event listeners
         PlayerStateListener playerStateListener = new PlayerStateListener(friendManager, ignoreManager, guildManager);
 
-        getServer().getPluginManager().registerEvents(new ChatEventListener(muteCommand, ignoreManager), this);
+        getServer().getPluginManager().registerEvents(new ChatEventListener(ignoreManager, partyManager, guildManager), this);
         getServer().getPluginManager().registerEvents(ignoreManager, this);
         getServer().getPluginManager().registerEvents(playerProfileManager, this);
         getServer().getPluginManager().registerEvents(new ProfileGUIListener(friendManager, ignoreManager, partyManager, guildManager, playerProfileManager), this);

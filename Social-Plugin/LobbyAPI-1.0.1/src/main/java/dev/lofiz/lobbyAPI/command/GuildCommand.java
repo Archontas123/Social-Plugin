@@ -2,6 +2,7 @@ package dev.lofiz.lobbyAPI.command;
 
 import dev.lofiz.lobbyAPI.model.Guild;
 import dev.lofiz.lobbyAPI.manager.GuildManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,14 +20,14 @@ public class GuildCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command.");
+            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
             return true;
         }
 
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /guild <create|invite|accept|deny|join|leave|disband|list|chat> [<name>]");
+            player.sendMessage(ChatColor.RED + "Usage: /guild <create|invite|accept|deny|join|leave|disband|list|chat> [<name>]");
             return true;
         }
 
@@ -35,7 +36,7 @@ public class GuildCommand implements CommandExecutor {
         switch (action) {
             case "create":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild create <name>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild create <name>");
                     return true;
                 }
                 String guildName = args[1];
@@ -43,33 +44,33 @@ public class GuildCommand implements CommandExecutor {
                 break;
             case "invite":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild invite <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild invite <player>");
                     return true;
                 }
                 Player invitee = player.getServer().getPlayer(args[1]);
                 if (invitee != null) {
                     guildManager.sendGuildInvite(player, invitee);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             case "accept":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild accept <name>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild accept <name>");
                     return true;
                 }
                 guildManager.acceptGuildInvite(player, args[1]);
                 break;
             case "deny":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild deny <name>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild deny <name>");
                     return true;
                 }
                 guildManager.denyGuildInvite(player, args[1]);
                 break;
             case "join":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild join <name>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild join <name>");
                     return true;
                 }
                 guildManager.joinGuild(player, args[1]);
@@ -85,7 +86,7 @@ public class GuildCommand implements CommandExecutor {
                 break;
             case "chat":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /guild chat <message>");
+                    player.sendMessage(ChatColor.RED + "Usage: /guild chat <message>");
                     return true;
                 }
                 Guild guild = guildManager.getGuild(player);
@@ -93,11 +94,11 @@ public class GuildCommand implements CommandExecutor {
                     String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                     guild.guildChat(player, message);
                 } else {
-                    player.sendMessage("You are not in a guild.");
+                    player.sendMessage(ChatColor.RED + "You are not in a guild.");
                 }
                 break;
             default:
-                player.sendMessage("Usage: /guild <create|invite|accept|deny|join|leave|disband|list|chat> [<name>]");
+                player.sendMessage(ChatColor.RED + "Usage: /guild <create|invite|accept|deny|join|leave|disband|list|chat> [<name>]");
                 break;
         }
         return true;

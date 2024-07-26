@@ -1,6 +1,7 @@
 package dev.lofiz.lobbyAPI.command;
 
 import dev.lofiz.lobbyAPI.manager.IgnoreManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +24,7 @@ public class IgnoreCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /ignore <add|remove|list> <player>");
+            player.sendMessage(ChatColor.RED + "Usage: /ignore <add|remove|list> <player>");
             return true;
         }
 
@@ -32,26 +33,26 @@ public class IgnoreCommand implements CommandExecutor {
         switch (action) {
             case "add":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /ignore add <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /ignore add <player>");
                     return true;
                 }
                 Player toIgnore = player.getServer().getPlayer(args[1]);
                 if (toIgnore != null) {
                     ignoreManager.addIgnoredPlayer(player, toIgnore);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             case "remove":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /ignore remove <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /ignore remove <player>");
                     return true;
                 }
                 Player toUnignore = player.getServer().getPlayer(args[1]);
                 if (toUnignore != null) {
                     ignoreManager.removeIgnoredPlayer(player, toUnignore);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             case "list":
@@ -61,7 +62,7 @@ public class IgnoreCommand implements CommandExecutor {
                 }
                 break;
             default:
-                player.sendMessage("Usage: /ignore <add|remove|list> <player>");
+                player.sendMessage(ChatColor.RED + "Usage: /ignore <add|remove|list> <player>");
                 break;
         }
         return true;

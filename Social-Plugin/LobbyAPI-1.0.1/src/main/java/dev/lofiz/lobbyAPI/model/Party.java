@@ -1,6 +1,7 @@
 package dev.lofiz.lobbyAPI.model;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -78,8 +79,10 @@ public class Party {
         for (UUID memberId : members) {
             Player member = Bukkit.getPlayer(memberId);
             if (member != null && member.isOnline()) {
-                member.sendMessage("[Party] " + sender.getName() + ": " + message);
+                member.sendMessage(ChatColor.GRAY + "[" + ChatColor.BLUE + "Party" + ChatColor.GRAY + "] " + ChatColor.RESET + sender.getName() + ": " + message);
             }
         }
     }
+
+
 }

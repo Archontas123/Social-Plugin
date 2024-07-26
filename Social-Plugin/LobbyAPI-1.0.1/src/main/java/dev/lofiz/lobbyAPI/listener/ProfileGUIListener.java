@@ -33,7 +33,7 @@ public class ProfileGUIListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getClickedInventory();
-        if (inventory == null || (!event.getView().getTitle().equals("Player Profile") && !event.getView().getTitle().equals("Privacy Settings"))) {
+        if (inventory == null || (!event.getView().getTitle().equals("Player Profile") && !event.getView().getTitle().equals("Privacy Settings") && !event.getView().getTitle().equals("Friends List") && !event.getView().getTitle().equals("Ignored Players"))) {
             return;
         }
 

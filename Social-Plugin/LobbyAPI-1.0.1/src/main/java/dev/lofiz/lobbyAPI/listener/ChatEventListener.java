@@ -1,31 +1,55 @@
 package dev.lofiz.lobbyAPI.listener;
 
-import dev.lofiz.lobbyAPI.command.MuteCommand;
 import dev.lofiz.lobbyAPI.manager.IgnoreManager;
+import dev.lofiz.lobbyAPI.manager.PartyManager;
+import dev.lofiz.lobbyAPI.manager.GuildManager;
+import dev.lofiz.lobbyAPI.model.Guild;
+import dev.lofiz.lobbyAPI.model.Party;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.entity.Player;
 
 public class ChatEventListener implements Listener {
-    private final MuteCommand muteCommand;
     private final IgnoreManager ignoreManager;
+    private final PartyManager partyManager;
+    private final GuildManager guildManager;
 
-    public ChatEventListener(MuteCommand muteCommand, IgnoreManager ignoreManager) {
-        this.muteCommand = muteCommand;
+    public ChatEventListener(IgnoreManager ignoreManager, PartyManager partyManager, GuildManager guildManager) {
         this.ignoreManager = ignoreManager;
+        this.partyManager = partyManager;
+        this.guildManager = guildManager;
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        Player sender = event.getPlayer();
+        Player player = event.getPlayer();
+        String message = event.getMessage();
 
-        if (muteCommand.isMuted(sender)) {
-            sender.sendMessage("You are muted and cannot send messages.");
+        // Party chat
+        if (message.startsWith("/p ")) {
             event.setCancelled(true);
+            message = message.substring(3);
+            Party party = partyManager.getParty(player);
+            if (party != null) {
+                party.broadcast(ChatColor.GRAY + "[" + ChatColor.BLUE + "Party" + ChatColor.GRAY + "] " + ChatColor.RESET + player.getName() + ": " + message);
+            } else {
+                player.sendMessage(ChatColor.RED + "You are not in a party.");
+            }
             return;
         }
 
-        event.getRecipients().removeIf(receiver -> ignoreManager.isIgnored(sender, receiver));
+        // Guild chat
+        if (message.startsWith("/gchat ")) {
+            event.setCancelled(true);
+            message = message.substring(7);
+            Guild guild = guildManager.getGuild(player);
+            if (guild != null) {
+                guild.broadcast(ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + "Guild" + ChatColor.DARK_GRAY + "] " + ChatColor.GREEN + player.getName() + ChatColor.WHITE + ": " + message);
+            } else {
+                player.sendMessage(ChatColor.RED + "You are not in a guild.");
+            }
+        }
     }
 }

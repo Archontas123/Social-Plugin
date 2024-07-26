@@ -1,6 +1,7 @@
 package dev.lofiz.lobbyAPI.command;
 
 import dev.lofiz.lobbyAPI.manager.FriendManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -59,19 +60,19 @@ public class FriendCommand implements CommandExecutor {
                 break;
             case "accept":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /friend accept <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /friend accept <player>");
                     return true;
                 }
                 Player friendToAccept = player.getServer().getPlayer(args[1]);
                 if (friendToAccept != null) {
                     friendManager.acceptFriendRequest(player, friendToAccept);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED +"Player not found.");
                 }
                 break;
             case "deny":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /friend deny <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /friend deny <player>");
                     return true;
                 }
                 Player friendToDeny = player.getServer().getPlayer(args[1]);
@@ -82,7 +83,7 @@ public class FriendCommand implements CommandExecutor {
                 }
                 break;
             default:
-                player.sendMessage("Usage: /friend <add|remove|list|accept|deny> [player]");
+                player.sendMessage(ChatColor.RED + "Usage: /friend <add|remove|list|accept|deny> [player]");
                 break;
         }
         return true;

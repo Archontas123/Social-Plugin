@@ -2,6 +2,7 @@ package dev.lofiz.lobbyAPI.command;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class MuteCommand implements CommandExecutor, Listener {
     private final JavaPlugin plugin;
-    private final HashMap<UUID, Long> mutedPlayers = new HashMap<>();
+    private final Map<UUID, Long> mutedPlayers = new HashMap<>();
+    private final Map<UUID, String> muteReasons = new HashMap<>();
 
     public MuteCommand(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -35,8 +37,8 @@ public class MuteCommand implements CommandExecutor, Listener {
     }
 
     private boolean handleMuteCommand(CommandSender sender, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "Please specify a player and mute duration.");
+        if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Please specify a player, mute duration, and reason.");
             return true;
         }
 
@@ -54,9 +56,18 @@ public class MuteCommand implements CommandExecutor, Listener {
             return true;
         }
 
-        mutePlayer(targetPlayer, muteDuration);
-        sender.sendMessage(ChatColor.GREEN + "You have successfully muted " + targetPlayer.getName() + " for " + muteDuration + " seconds.");
-        targetPlayer.sendMessage(ChatColor.RED + "You have been muted for " + muteDuration + " seconds.");
+        StringBuilder reasonBuilder = new StringBuilder();
+        for (int i = 2; i < args.length; i++) {
+            if (i > 2) {
+                reasonBuilder.append(" ");
+            }
+            reasonBuilder.append(args[i]);
+        }
+        String reason = reasonBuilder.toString();
+
+        mutePlayer(targetPlayer, muteDuration, reason);
+        sender.sendMessage(ChatColor.GREEN + "You have successfully muted " + targetPlayer.getName() + " for " + muteDuration + " seconds for reason: " + reason);
+        targetPlayer.sendMessage(ChatColor.RED + "You have been muted for " + muteDuration + " seconds. Reason: " + reason);
         return true;
     }
 
@@ -87,10 +98,11 @@ public class MuteCommand implements CommandExecutor, Listener {
         return unmuteTime != null && System.currentTimeMillis() < unmuteTime;
     }
 
-    private void mutePlayer(Player player, int duration) {
+    private void mutePlayer(Player player, int duration, String reason) {
         final UUID playerUUID = player.getUniqueId();
         long unmuteTime = System.currentTimeMillis() + (long) duration * 1000L;
         mutedPlayers.put(playerUUID, unmuteTime);
+        muteReasons.put(playerUUID, reason);
         saveMuteData();
         new BukkitRunnable() {
             @Override
@@ -102,6 +114,7 @@ public class MuteCommand implements CommandExecutor, Listener {
 
     private void unmutePlayer(UUID playerUUID) {
         mutedPlayers.remove(playerUUID);
+        muteReasons.remove(playerUUID);
         saveMuteData();
         Player player = Bukkit.getPlayer(playerUUID);
         if (player != null) {
@@ -112,7 +125,8 @@ public class MuteCommand implements CommandExecutor, Listener {
     private void saveMuteData() {
         FileConfiguration config = plugin.getConfig();
         for (UUID uuid : mutedPlayers.keySet()) {
-            config.set("mutedPlayers." + uuid.toString(), mutedPlayers.get(uuid));
+            config.set("mutedPlayers." + uuid.toString() + ".unmuteTime", mutedPlayers.get(uuid));
+            config.set("mutedPlayers." + uuid.toString() + ".reason", muteReasons.get(uuid));
         }
         plugin.saveConfig();
     }
@@ -122,9 +136,11 @@ public class MuteCommand implements CommandExecutor, Listener {
         if (config.contains("mutedPlayers")) {
             for (String key : config.getConfigurationSection("mutedPlayers").getKeys(false)) {
                 final UUID uuid = UUID.fromString(key);
-                long unmuteTime = config.getLong("mutedPlayers." + key);
+                long unmuteTime = config.getLong("mutedPlayers." + key + ".unmuteTime");
+                String reason = config.getString("mutedPlayers." + key + ".reason");
                 if (System.currentTimeMillis() < unmuteTime) {
                     mutedPlayers.put(uuid, unmuteTime);
+                    muteReasons.put(uuid, reason);
                     long remainingTime = (unmuteTime - System.currentTimeMillis()) / 1000L;
                     new BukkitRunnable() {
                         @Override

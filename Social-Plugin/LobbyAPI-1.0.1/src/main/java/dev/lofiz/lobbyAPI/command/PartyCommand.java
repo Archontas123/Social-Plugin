@@ -2,6 +2,7 @@ package dev.lofiz.lobbyAPI.command;
 
 import dev.lofiz.lobbyAPI.manager.PartyManager;
 import dev.lofiz.lobbyAPI.model.Party;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,7 +28,7 @@ public class PartyCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Usage: /party <create|invite|accept|deny|join|leave|kick|disband|warp|chat|promote|transfer> [<player>]");
+            player.sendMessage(ChatColor.RED + "Usage: /party <create|invite|accept|deny|join|leave|kick|disband|warp|chat|promote|transfer> [<player>]");
             return true;
         }
 
@@ -39,50 +40,50 @@ public class PartyCommand implements CommandExecutor {
                 break;
             case "invite":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party invite <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party invite <player>");
                     return true;
                 }
                 Player invitee = player.getServer().getPlayer(args[1]);
                 if (invitee != null) {
                     partyManager.sendPartyInvite(player, invitee);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             case "accept":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party accept <leader>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party accept <leader>");
                     return true;
                 }
                 Player leader = player.getServer().getPlayer(args[1]);
                 if (leader != null) {
                     partyManager.acceptPartyInvite(player, leader);
                 } else {
-                    player.sendMessage("Leader not found.");
+                    player.sendMessage(ChatColor.RED + "Leader not found.");
                 }
                 break;
             case "deny":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party deny <leader>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party deny <leader>");
                     return true;
                 }
                 leader = player.getServer().getPlayer(args[1]);
                 if (leader != null) {
                     partyManager.denyPartyInvite(player, leader);
                 } else {
-                    player.sendMessage("Leader not found.");
+                    player.sendMessage(ChatColor.RED + "Leader not found.");
                 }
                 break;
             case "join":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party join <leader>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party join <leader>");
                     return true;
                 }
                 leader = player.getServer().getPlayer(args[1]);
                 if (leader != null) {
                     partyManager.joinParty(player, leader);
                 } else {
-                    player.sendMessage("Leader not found.");
+                    player.sendMessage(ChatColor.RED + "Leader not found.");
                 }
                 break;
             case "leave":
@@ -90,14 +91,14 @@ public class PartyCommand implements CommandExecutor {
                 break;
             case "kick":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party kick <member>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party kick <member>");
                     return true;
                 }
                 Player member = player.getServer().getPlayer(args[1]);
                 if (member != null) {
                     partyManager.kickMember(player, member);
                 } else {
-                    player.sendMessage("Member not found.");
+                    player.sendMessage(ChatColor.RED + "Member not found.");
                 }
                 break;
             case "disband":
@@ -109,7 +110,7 @@ public class PartyCommand implements CommandExecutor {
                 break;
             case "chat":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party chat <message>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party chat <message>");
                     return true;
                 }
                 Party party = partyManager.getParty(player);
@@ -117,35 +118,35 @@ public class PartyCommand implements CommandExecutor {
                     String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                     party.partyChat(player, message);
                 } else {
-                    player.sendMessage("You are not in a party.");
+                    player.sendMessage(ChatColor.RED + "You are not in a party.");
                 }
                 break;
             case "promote":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party promote <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party promote <player>");
                     return true;
                 }
                 Player promotee = player.getServer().getPlayer(args[1]);
                 if (promotee != null) {
                     partyManager.promoteToModerator(player, promotee);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             case "transfer":
                 if (args.length < 2) {
-                    player.sendMessage("Usage: /party transfer <player>");
+                    player.sendMessage(ChatColor.RED + "Usage: /party transfer <player>");
                     return true;
                 }
                 Player newLeader = player.getServer().getPlayer(args[1]);
                 if (newLeader != null) {
                     partyManager.transferLeadership(player, newLeader);
                 } else {
-                    player.sendMessage("Player not found.");
+                    player.sendMessage(ChatColor.RED + "Player not found.");
                 }
                 break;
             default:
-                player.sendMessage("Usage: /party <create|invite|accept|deny|join|leave|kick|disband|warp|chat|promote|transfer> [<player>]");
+                player.sendMessage(ChatColor.RED + "Usage: /party <create|invite|accept|deny|join|leave|kick|disband|warp|chat|promote|transfer> [<player>]");
                 break;
         }
         return true;
